@@ -49,6 +49,7 @@ std::cout << std::endl << std::endl << "Your user name is now " << temp_user.use
 std::cout << "Enter a password you will remember:\n";
 getline(std::cin, temp_user.passWord);
 std::cout << "Your password is " << temp_user.passWord << std::endl;
+users.push_back(temp_user);
 Sleep(500);
 std::cout << "For security reasons we require you to use your newly made log in credentials to log in to our site";
 Sleep(1000);
