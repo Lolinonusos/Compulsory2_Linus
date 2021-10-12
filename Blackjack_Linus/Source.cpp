@@ -109,7 +109,11 @@ int main() {
 	return 0;
 }
 
-void printCards() {
+void printCards(std::vector<Card>&) {
+
+}
+
+void makeCards() {
 
 }
 
