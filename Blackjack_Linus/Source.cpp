@@ -25,22 +25,23 @@ struct Card {
 // Values important to the Player and House
 struct Player {
 	std::vector <Card> hand{}; // This will be the cards the player and house draws to their hands
-	int capital{ 100 }; // Money
-	int points{}; // 
+	unsigned int capital{ 100 }; // Money
+	unsigned int points{}; // 
 } player, house;
 
 // Task 1 
 void logIn(); // Input password and stuff
 void createUser(std::vector<User>&); // Create username and password, also & is very cool and awesome, makes function go brrrrr
-unsigned int logInLoop{};
+int logInLoop{};
 int correctPassWord = 0;
 
 // Task 2 relevant 
 void makeCards(std::vector<Card>&); // Make the cards, find out how to randomize and draw later
 void introToJackBlack(); // A little menu
 void jackBlack(std::vector<Card>&); // Main jack black function
-void rules(); // Just text
 void restock(std::vector<Card>&); // Randomize cards
+int calculatePoints(Player points);
+void rules(); // Just text
 
 // Misc. global stuff
 void clearCin();
@@ -50,7 +51,7 @@ int main() {
 
 	std::vector<Card> cards{}; // A vector for keeping all the different cards
 	makeCards(cards); // All the cards are created and pushed into the cards vector
-	restock(cards);
+	
 	introToJackBlack();
 	jackBlack(cards); // Gaming
 	return 0;
@@ -128,6 +129,8 @@ void createUser(std::vector<User>& users) {
 // Create a vector full of Card
 void makeCards(std::vector<Card>& cards ) {
 	Card temp_card{};
+	char b{}; 
+
 	for (int j = 1; j <= 4; j++) { // For the suit
 		for (int i = 1; i <= 13; i++) { // For the court/ number
 
@@ -173,6 +176,7 @@ void makeCards(std::vector<Card>& cards ) {
 			std::cout << "This is card #" << cards.size() << std::endl; // Check how many cards have been made so far
 		}
 	}
+	//std::cin >> b;
 }
 
 // A little menu to decide if you want to see the rules before playing
@@ -197,60 +201,126 @@ void introToJackBlack() {
 
 // Gaming
 void jackBlack(std::vector<Card>& cards) {
-	int bet{};
+	unsigned int bet{}; // Amount of money the player and house bets
+	unsigned int pot{}; // Amount of money the player and house receives when winning a round
+	char drawCard{}; // yes no input
+	int playerTurn{}; // Loop
+	int houseTurn{}; // Loop
+	char playAnotherGame{ 'y' };
 
-	std::cout << cards.size();
+	while (playAnotherGame == 'y') {
 
-	while (true) {
+		while (true) {
 
-		bet = 0; // Resets the bet amount to 0
-		clearCin();
-		while (bet < 10  || bet > house.capital || bet > player.capital) { // Loops here until bet amount is reasonable
+			restock(cards); // Restock the order of cards
+			bet = 0; // Resets the bet amount to 0
+			clearCin();
+			while (bet < 10  || bet > house.capital || bet > player.capital) { // Loops here until bet amount is reasonable
+
+				// Reuse these three lines many times
+				system("cls");
+				std::cout << "You can always press H to view the rules again\n" << std::endl;
+				std::cout << "You have " << player.capital << "$ " << "\t The House has " << house.capital << "$\n" << std::endl; // HUD to show capital of players
+				std::cout << "Pot: " << pot << "$\n" << std::endl;
+					
+				std::cout << "Insert amount you would like to bet: ";
+				std::cin >> bet;
+				if (bet < 10) {
+					std::cout << "You need to bet at least 10$." << std::endl;
+					Sleep(500);
+				}
+				if (bet > house.capital) {
+					std::cout << "I cannot match your bet.";
+					Sleep(500);
+				}
+				if (bet > player.capital) {
+					std::cout << "You don't have enough money for that.";
+					Sleep(500);
+				}
+					
+			}
+
+			system("cls");
+			std::cout << "You can always press H to view the rules again\n" << std::endl;
+			std::cout << "You have " << player.capital << "$ " << "\t The House has " << house.capital << "$\n" << std::endl;
+			player.capital = player.capital - bet;
+			house.capital = house.capital - bet;
+			pot = bet * 2;
+			std::cout << "Pot: " << pot << "$\n" << std::endl;
+	
+			std::cout << "You bet " << bet << "$" << std::endl;
+			std::cout << "Winner of this round receives " << pot << "$" << std::endl;
+
+
+
+			// The player's turn to draw cards
+			for (int playerTurn = 0; playerTurn < cards.size(); playerTurn++) { 
+
+				std::cout << "You currently have " << player.points << std::endl << std::endl;
+				std::cout << "Do you want to draw another card? y/n ";
+				clearCin();
+				drawCard = _getch();
+				drawCard = tolower(drawCard);
+					
+				if (drawCard == 'y') {
+					player.hand.push_back(cards[playerTurn]);
+					std::cout << "You drew a " << player.hand[playerTurn].court << player.hand[playerTurn].cardSuit << std::endl << std::endl;
+				}
+				else if (drawCard == 'n') {
+					break;
+				}
+
+				calculatePoints(points);
+				player.points = calculatePoints(); // Points is equal to what the function returns itself as
+
+
+				if (player.points > 21) {
+					std::cout << "You've lost this round because you accumulated over 21 points.";
+					break;
+				}
+			}
+
+			// The house's turn to draw cards
+			for (int houseTurn = playerTurn; houseTurn < cards.size(); houseTurn++) {
+
+
+			}
+
 
 			system("cls");
 			std::cout << "You can always press H to view the rules again\n" << std::endl;
 			std::cout << "You have " << player.capital << "$ " << "\t The House has " << house.capital << "$\n" << std::endl; // HUD to show capital of players
-			std::cout << "Insert amount you would like to bet: ";
-			std::cin >> bet;
-			if (bet < 10) {
-				std::cout << "You need to bet at least 10$." << std::endl;
-				Sleep(500);
-			}
-			if (bet > house.capital) {
-				std::cout << "I cannot match you bet.";
-				Sleep(500);
-			}
-			if (bet > player.capital) {
-				std::cout << "You don't have enough money for that.";
-				Sleep(500);
-			}
+			std::cout << "Pot: " << pot << "$\n" << std::endl;
+
+			std::cout << "You now have " << player.capital << "$"; // Move to after round?
 
 		}
-
-		std::cout << "You bet " << bet << "$";
-		player.capital = player.capital - bet;
-		house.capital = house.capital - bet;
-
-		std::cout << "You now have " << player.capital << "$"; // Move to after round?
+		std::cout << "Do you want to play another round?";
+		std::cin >> playAnotherGame;
 	}
+}
+
+int calculatePoints(Player points) {
+	unsigned int score{};
+
+	return score;
 }
 
 // Restock the order of cards
 void restock(std::vector<Card>& cards) {
 	char bruh{};
-	
-	// Gives a time based seed
+
+	// Gives a seed based on the system clock
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 
 	// Shuffles the cards vector
 	std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
-	
-	for (int i = 0; i < cards.size(); i++) {
 
-		std::cout << "Card: " << cards[i].court << cards[i].cardSuit << "\tCard score value : " << cards[i].cardValue << std::endl;
+	// To visualize the shuffle
+	for (int i = 0; i < cards.size(); i++) {
+		std::cout << "Card: " << cards[i].court << cards[i].cardSuit << "\tCard score value : " << cards[i].cardValue << std::endl; 
 	}
-	//std::cout << "This is now card #" << std::endl;
-	std::cin >> bruh;
+	//std::cin >> bruh;
 }
 
 // Rules of the game
