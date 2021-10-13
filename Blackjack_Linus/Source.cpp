@@ -4,31 +4,51 @@
 #include <vector>
 #include <string>
 
-struct User { // For creating new users
-std::string userName; // 
-std::string passWord; // 
+// All your user names and passwords
+struct User {
+	std::string userName; // 
+	std::string passWord; // 
 };
 
+// A nice struct for all the cards
 struct Card {
-	int cardValue{}; // Number value of card
-	int cardColour{}; // We'll see whats better, colours or just 4 of each card
+	int cardValue{};		// Point value of a card
+	std::string court{};	// Which court or number a card has
+	std::string cardSuit{}; // Which of the four suits the card is part of
 };
 
-void logIn(); // task 1
-void createUser(std::vector<User>&);
+// Values important to the Player and House
+struct Player {
+	std::vector <Card> hand{}; // This will be the cards the player and house draws to their hands
+	int capital{ 100 }; // Money
+	int points{}; // 
+} player, house;
+
+// Task 1 
+void logIn(); // Input password and stuff
+void createUser(std::vector<User>&); // Create username and password, also & is very cool and awesome, makes function go brrrrr
 int logInLoop{};
 int correctPassWord = 0;
 
+// Task 2 relevant 
 void makeCards(std::vector<Card>&); // Make the cards, find out how to randomize and draw later
-void introToJackBlack();
-void jackBlack(); // Main jack black function
-void rules();
-struct Player {
-	std::vector <Card> hand{}; // This will be the cards the player and house draws to their hands
-	int capital{ 100 };
-} player, house;
+void introToJackBlack(); // A little menu
+void jackBlack(std::vector<Card>&); // Main jack black function
+void rules(); // Just text
+void restock(); // Randomize cards
 
+// Misc. global stuff
 void clearCin();
+
+int main() {
+	//logIn();
+
+	std::vector<Card> cards{}; // A vector for keeping all the different cards
+	makeCards(cards); // All the cards are created and pushed into the cards vector
+	introToJackBlack();
+	jackBlack(cards); // Gaming
+	return 0;
+}
 
 void logIn() {
 	std::vector<User> users{}; // A vector named users that will be filled with users?
@@ -98,26 +118,56 @@ void createUser(std::vector<User>& users) {
 	Sleep(1000);
 }
 
-void printCards(); // For debugging, checking if all cards exist
+void makeCards(std::vector<Card>& cards ) {
+	Card temp_card{};
+	for (int j = 1; j <= 4; j++) { // For the suit
+		for (int i = 1; i <= 13; i++) { // For the court/ number
 
-int main() {
-	//logIn();
+			// This part decides which court or number the card has and also what point value it will have in JackBlack
+			if (i == 1) {
+				temp_card.cardValue = 1;
+				temp_card.court = "Ace";
+			}
+			if (i == 11) {
+				temp_card.cardValue = 10;
+				temp_card.court = "Jack";
+			}
+			if (i == 12) {
+				temp_card.cardValue = 10;
+				temp_card.court = "Queen";
+			}
+			if (i == 13) {
+				temp_card.cardValue = 10;
+				temp_card.court = "King";
+			}
+			if (i >= 2 && i <= 10) { // Number cards
+				temp_card.cardValue = i;
+				temp_card.court = std::to_string(i); // to_string converts the numerical value of the int to a character value whithout changing the character displayed
+			}
+				
+			// This part decides which suit the card has	
+			if (j == 1) {
+				temp_card.cardSuit = " of Spades";
+			}
+			if (j == 2) {
+				temp_card.cardSuit = " of Hearts";
+			}	
+			if (j == 3) {
+				temp_card.cardSuit = " of Diamonds";
+			}
+			if (j == 4) {
+				temp_card.cardSuit = " of Clubs";
+			}
 
-	std::vector<Card> cards; // A vector for keeping all the different cards
-	introToJackBlack();
-	jackBlack();
-	return 0;
+			// 
+			std::cout << "Card: " << temp_card.court << temp_card.cardSuit <<"\tCard score value : " << temp_card.cardValue << "\t"; // What card we just made
+			cards.push_back(temp_card);
+			std::cout << "This is card #" << cards.size() << std::endl; // Check how many cards have been made so far
+		}
+	}
 }
 
-void printCards(std::vector<Card>&) {
-
-}
-
-void makeCards() {
-
-}
-
-void introToJackBlack() {
+void introToJackBlack() { // 
 	char oneTwo{};
 
 	system("cls");
@@ -137,12 +187,14 @@ void introToJackBlack() {
 }
 
 
-void jackBlack() {
+void jackBlack(std::vector<Card>& cards) {
 	int bet{};
+
+	std::cout << cards.size();
 
 	while (true)
 	{
-		bet = 0; // Resets the bet to 0
+		bet = 0; // Resets the bet amount to 0
 		clearCin();
 		while (bet < 10  || bet > house.capital || bet > player.capital) { // Loops here until bet amount is reasonable
 
@@ -165,16 +217,18 @@ void jackBlack() {
 			}
 		}
 		std::cout << "You bet " << bet << "$";
-	
+		player.capital = player.capital - bet;
+		std::cout << "You now have " << player.capital << "$"; // Remove move to a later point
+		
 	}
 }
 
-void rules() {
+void rules() { // Rules of the game
 	system("cls");
 	char gotIt{};
 	
 	std::cout << "These are the rules of JackBlack:\n" << std::endl;
-	std::cout << "Or course, there are a total of 52 ards. Each card has a point value betwwen 1-11:" << std::endl;
+	std::cout << "Or course, there are a total of 52 cards. Each card has a point value betwwen 1-11:" << std::endl;
 	std::cout << "The card 2-10 has the same point value as their numbers." << std::endl;
 	std::cout << "Jacks, Queens, and Kings all have a point value of 10." << std::endl;
 	std::cout << "Aces are special as you can decide which point value of either 1 or 11 you want." << std::endl;
@@ -184,11 +238,12 @@ void rules() {
 	std::cout << "The minimum fee you must bet to play a round is 10$. I will always match your bet, so you cannot bet more money than I have." << std::endl;
 	std::cout << "We play until one of us loses all of our capital, or you decide to close the program.\n" << std::endl;
 	
-	std::cout << "When you got it, you just press a button to continue.";
+	std::cout << "Press any button to continue.";
 	gotIt = _getch();
 	system("cls");
 }
 
+// Clear buffer from cin
 void clearCin() {
 	std::cin.clear();
 	std::cin.ignore(32767, '\n');
