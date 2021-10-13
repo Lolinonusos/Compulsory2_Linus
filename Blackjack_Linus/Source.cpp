@@ -1,8 +1,13 @@
 #include <iostream>
-#include <conio.h>
+#include <conio.h> // For _getch
 #include <Windows.h>
 #include <vector>
 #include <string>
+#include <ctime>
+#include <algorithm> // std::shuffle
+#include <random>
+#include <chrono>
+//#include <array>
 
 // All your user names and passwords
 struct User {
@@ -27,7 +32,7 @@ struct Player {
 // Task 1 
 void logIn(); // Input password and stuff
 void createUser(std::vector<User>&); // Create username and password, also & is very cool and awesome, makes function go brrrrr
-int logInLoop{};
+unsigned int logInLoop{};
 int correctPassWord = 0;
 
 // Task 2 relevant 
@@ -35,7 +40,7 @@ void makeCards(std::vector<Card>&); // Make the cards, find out how to randomize
 void introToJackBlack(); // A little menu
 void jackBlack(std::vector<Card>&); // Main jack black function
 void rules(); // Just text
-void restock(); // Randomize cards
+void restock(std::vector<Card>&); // Randomize cards
 
 // Misc. global stuff
 void clearCin();
@@ -45,11 +50,13 @@ int main() {
 
 	std::vector<Card> cards{}; // A vector for keeping all the different cards
 	makeCards(cards); // All the cards are created and pushed into the cards vector
+	restock(cards);
 	introToJackBlack();
 	jackBlack(cards); // Gaming
 	return 0;
 }
 
+// Here you log with a username and password
 void logIn() {
 	std::vector<User> users{}; // A vector named users that will be filled with users?
 
@@ -78,9 +85,8 @@ void logIn() {
 			}*/
 			//else {
 			clearCin();
-			std::getline(std::cin, insertUserName);
+			std::getline(std::cin, insertUserName); // This is where user name is inserted
 	
-			// Make this for loop global?
 			for (int logInLoop = 0; logInLoop < users.size(); logInLoop++) { // This loop is going to check the vector for user names and then ask for the password to that user
 				if (insertUserName == users[logInLoop].userName) {
 					
@@ -102,6 +108,7 @@ void logIn() {
 	}
 }
 
+// Here you crate a username and password
 void createUser(std::vector<User>& users) {
 	User temp_user{};
 	
@@ -118,6 +125,7 @@ void createUser(std::vector<User>& users) {
 	Sleep(1000);
 }
 
+// Create a vector full of Card
 void makeCards(std::vector<Card>& cards ) {
 	Card temp_card{};
 	for (int j = 1; j <= 4; j++) { // For the suit
@@ -159,7 +167,7 @@ void makeCards(std::vector<Card>& cards ) {
 				temp_card.cardSuit = " of Clubs";
 			}
 
-			// 
+			// Seeing if every card are created correctly 
 			std::cout << "Card: " << temp_card.court << temp_card.cardSuit <<"\tCard score value : " << temp_card.cardValue << "\t"; // What card we just made
 			cards.push_back(temp_card);
 			std::cout << "This is card #" << cards.size() << std::endl; // Check how many cards have been made so far
@@ -167,7 +175,8 @@ void makeCards(std::vector<Card>& cards ) {
 	}
 }
 
-void introToJackBlack() { // 
+// A little menu to decide if you want to see the rules before playing
+void introToJackBlack() { 
 	char oneTwo{};
 
 	system("cls");
@@ -186,14 +195,14 @@ void introToJackBlack() { //
 	}
 }
 
-
+// Gaming
 void jackBlack(std::vector<Card>& cards) {
 	int bet{};
 
 	std::cout << cards.size();
 
-	while (true)
-	{
+	while (true) {
+
 		bet = 0; // Resets the bet amount to 0
 		clearCin();
 		while (bet < 10  || bet > house.capital || bet > player.capital) { // Loops here until bet amount is reasonable
@@ -215,15 +224,37 @@ void jackBlack(std::vector<Card>& cards) {
 				std::cout << "You don't have enough money for that.";
 				Sleep(500);
 			}
+
 		}
+
 		std::cout << "You bet " << bet << "$";
 		player.capital = player.capital - bet;
-		std::cout << "You now have " << player.capital << "$"; // Remove move to a later point
-		
+		house.capital = house.capital - bet;
+
+		std::cout << "You now have " << player.capital << "$"; // Move to after round?
 	}
 }
 
-void rules() { // Rules of the game
+// Restock the order of cards
+void restock(std::vector<Card>& cards) {
+	char bruh{};
+	
+	// Gives a time based seed
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+	// Shuffles the cards vector
+	std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
+	
+	for (int i = 0; i < cards.size(); i++) {
+
+		std::cout << "Card: " << cards[i].court << cards[i].cardSuit << "\tCard score value : " << cards[i].cardValue << std::endl;
+	}
+	//std::cout << "This is now card #" << std::endl;
+	std::cin >> bruh;
+}
+
+// Rules of the game
+void rules() { 
 	system("cls");
 	char gotIt{};
 	
