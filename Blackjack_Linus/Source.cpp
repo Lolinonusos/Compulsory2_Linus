@@ -26,7 +26,7 @@ struct Card {
 struct Player {
 	std::vector <Card> hand{}; // This will be the cards the player and house draws to their hands
 	unsigned int capital{ 100 }; // Money
-	unsigned int points{}; 
+	unsigned int points{}; // Summary of card point values
 } player, house;
 
 // Task 1 
@@ -204,13 +204,15 @@ void jackBlack(std::vector<Card>& cards) {
 	unsigned int bet{}; // Amount of money the player and house bets
 	unsigned int pot{}; // Amount of money the player and house receives when winning a round
 	char drawCard{}; // yes no input
-	int playerTurn{}; // Loop
-	int houseTurn{}; // Loop
 	int playerWon{};
 	int houseWon{};
+	int turnCount{};
 	char playAnotherGame{ 'y' };
 
 	while (playAnotherGame == 'y') {
+
+
+
 
 		while (player.capital != 0 || house.capital != 0) {
 
@@ -256,7 +258,7 @@ void jackBlack(std::vector<Card>& cards) {
 
 
 			// The player's turn to draw cards
-			for (int playerTurn = 0; playerTurn < cards.size(); playerTurn++) { 
+			for (turnCount = 0; turnCount < cards.size(); turnCount++) { 
 
 				std::cout << "You currently have " << player.points << std::endl << std::endl;
 				std::cout << "Do you want to draw another card? y/n ";
@@ -265,49 +267,74 @@ void jackBlack(std::vector<Card>& cards) {
 				drawCard = tolower(drawCard);
 					
 				if (drawCard == 'y') {
-					player.hand.push_back(cards[playerTurn]);
-					std::cout << "You drew a " << player.hand[playerTurn].court << player.hand[playerTurn].cardSuit << std::endl;
+					player.hand.push_back(cards[turnCount]);
+					std::cout << "You drew a " << player.hand[turnCount].court << player.hand[turnCount].cardSuit << std::endl;
 					
 					// Choose what the Aces point value is going to be
-					if (player.hand[playerTurn].court == "Ace") {
+					if (player.hand[turnCount].court == "Ace") {
 						std::cout << "Do you want it to be worth 1 point or 11 points?\n" << "Press button 1 for 1 point or button 2 for 11 points\n";
 						char aceSelect{};
 						aceSelect = _getch();
 						switch (aceSelect) {
 						case '1':
-							player.hand[playerTurn].cardValue = 1;
+							player.hand[turnCount].cardValue = 1;
 							break;
 						case '2':
-							player.hand[playerTurn].cardValue = 11;
+							player.hand[turnCount].cardValue = 11;
 							break;
 						default:
 
 							break;
 						}
-						std::cout << "It is worth " << player.hand[playerTurn].cardValue << " points\n" << std::endl;
+						std::cout << "It is worth " << player.hand[turnCount].cardValue << " points\n" << std::endl;
 					}
 					else {
-						std::cout << "It is worth " << player.hand[playerTurn].cardValue << " points\n" << std::endl;
+						std::cout << "It is worth " << player.hand[turnCount].cardValue << " points\n" << std::endl;
 					}
 				}
+				// End the players turn
 				else if (drawCard == 'n') {
 					break;
 				}
 
-				player.points = player.points + player.hand[playerTurn].cardValue;
+				player.points = player.points + player.hand[turnCount].cardValue;
 
-
+				// The player lost the round
 				if (player.points > 21) {
 					std::cout << "You've lost this round because you accumulated over 21 points.";
 					houseWon = 1;
-					break; // End the round
+					break;
 				}
 			}
-
+			
+			
 			// The house's turn to draw cards
-			for (int houseTurn = playerTurn; houseTurn < cards.size(); houseTurn++) {
+			// Since the house draws cards after the player I must make sure that the house continues to draw the cards that come next
+			while (house.points <= player.points ) {
+				house.hand.push_back(cards[turnCount]);
+				std::cout << "I drew a " << house.hand[turnCount].court << house.hand[turnCount].cardSuit << std::endl;
+				turnCount++; // Finn ut om den skal før eller etter :)
+			
+				// When the house gets an ace
+				if (house.hand[turnCount].court == "Ace") {
+					if (house.points > 10) {
+						house.hand[turnCount].cardValue = 1;
+					}
+					else {
+						house.hand[turnCount].cardValue = 11;
+					}
+				}
 
-
+				//std::cout << "It is worth " << house.hand[turnCount].cardValue << " points\n" << std::endl;
+				
+				house.points = house.points + house.hand[turnCount].cardValue;
+				Sleep(1000);
+				// House loses
+				if (house.points > 21) {
+					std::cout << "Asheee.";
+					playerWon = 1;
+					break;
+				}
 			}
 
 			if (playerWon == 1) {
@@ -326,6 +353,9 @@ void jackBlack(std::vector<Card>& cards) {
 
 			// Hvordan i helvette tømmer jeg en vektor
 		}
+
+
+
 		std::cout << "Do you want to play another round?";
 		std::cin >> playAnotherGame;
 	}
