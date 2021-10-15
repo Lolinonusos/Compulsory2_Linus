@@ -244,7 +244,7 @@ void jackBlack(std::vector<Card>& cards) {
 
 			system("cls");
 			//std::cout << "You can always press H to view the rules again\n" << std::endl;
-			std::cout << "I've had some trouble with clearCin as you'll have to press enter some extra times??"
+			std::cout << "I've had some trouble with clearCin as you'll have to press enter some extra times??";
 			std::cout << "You have " << player.capital << "$ " << "\t The House has " << house.capital << "$\n" << std::endl;
 			pot = bet * 2;
 			std::cout << "Pot: " << pot << "$\n" << std::endl;
