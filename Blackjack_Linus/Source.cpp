@@ -90,7 +90,7 @@ void logIn() {
 			for (int logInLoop = 0; logInLoop < users.size(); logInLoop++) { // This loop is going to check the vector for user names and then ask for the password to that user
 				if (insertUserName == users[logInLoop].userName) {
 					
-					for (int i = 0; i < 3; i++) { // For loop that will terminate if password is entered wrong too many times
+					for (int i = 0; i < 3; i++) { // For loop that will terminate program after three failed attempts
 						if (i == 3) {
 							std::cout << "The password has bees entered wrong too many times\n" << "We will now terminate the login attempt" << std::endl;
 							exit(0);
@@ -204,12 +204,13 @@ void jackBlack(std::vector<Card>& cards) {
 	char drawCard{ 'y' }; // yes no input
 	int playerWon{};
 	int houseWon{};
-	int turnCount{};
+	int turnCount{}; 
 	char playAnotherGame{ 'y' };
 
 	while (playAnotherGame == 'y') {
 
 		restock(cards); // Restock the order of cards
+		// It does not restock in different ways, big problem, it is probably gonna crash the program after drawing all 52 cards
 
 		while (player.capital != 0 && house.capital != 0) {
 
@@ -243,12 +244,13 @@ void jackBlack(std::vector<Card>& cards) {
 
 			system("cls");
 			//std::cout << "You can always press H to view the rules again\n" << std::endl;
+			std::cout << "I've had some trouble with clearCin as you'll have to press enter some extra times??"
 			std::cout << "You have " << player.capital << "$ " << "\t The House has " << house.capital << "$\n" << std::endl;
 			pot = bet * 2;
 			std::cout << "Pot: " << pot << "$\n" << std::endl;
 	
 			std::cout << "You bet " << bet << "$" << std::endl;
-			std::cout << "Winner of this round receives " << pot << "$" << std::endl;
+			std::cout << "Winner of this round receives " << pot << "$\n" << std::endl;
 
 			//turnCount = 0;
 
