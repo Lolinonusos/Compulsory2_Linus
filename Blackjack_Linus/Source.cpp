@@ -1,7 +1,7 @@
 #include "Header.h"
 
 int main() {
-	//logIn(); // Make user and login to play JackBlack
+	logIn(); // Make user and login to play JackBlack
 
 	std::vector<Card> cards{}; // A vector for keeping all the different cards
 	makeCards(cards); // All the cards are created and pushed into the cards vector
@@ -49,9 +49,9 @@ void logIn() {
 								std::cout << "The password has bees entered wrong too many times\n" << "We will now terminate the login attempt" << std::endl;
 								exit(0);
 							}
-							clearCin();
 							std::cout << "Enter the password for that account;" << std::endl;
 							std::getline(std::cin, insertPassWord);
+							clearCin();
 							if (insertPassWord == users[logInLoop].passWord) {
 								std::cout << "Login successful! Welcome" << users[logInLoop].userName << "\n" << "We will bring you to JackBlack in just a moment" << std::endl;
 								correctPassWord = 1;
@@ -60,7 +60,6 @@ void logIn() {
 						}
 					}
 				}
-				clearCin();
 			}
 		}
 	}
@@ -154,6 +153,9 @@ void introToJackBlack() {
 	case '2':
 		rules();
 		break;
+	default:
+		rules();
+		break;
 	}
 }
 
@@ -212,12 +214,11 @@ void jackBlack(std::vector<Card>& cards) {
 			std::cout << "You bet " << bet << "$" << std::endl;
 			std::cout << "Winner of this round receives " << pot << "$\n" << std::endl;
 
-			turnCount = 0;
+			//turnCount = 0;
 
 			// The player's turn to draw cards
 			for (turnCount; turnCount < cards.size(); turnCount++) { 
-				clearCin();
-					
+				drawCard = 'y';
 				if (drawCard == 'y') {
 					cards[turnCount];
 					std::cout << "You drew a " << cards[turnCount].court << cards[turnCount].cardSuit << std::endl;
@@ -226,7 +227,7 @@ void jackBlack(std::vector<Card>& cards) {
 					if (cards[turnCount].court == "Ace") {
 						std::cout << "Do you want it to be worth 1 point or 11 points?\n" << "Press button 1 for 1 point or button 2 for 11 points\n";
 						char aceSelect{};
-						while (aceSelect != 1 || aceSelect != 2) {
+						while (aceSelect == 1 || aceSelect == 2) {
 
 						aceSelect = _getch();
 						
@@ -240,6 +241,7 @@ void jackBlack(std::vector<Card>& cards) {
 							default:
 								std::cout << "Use '1' or '2' key.";
 								break;
+								clearCin();
 							}
 						}
 						std::cout << "It is worth " << cards[turnCount].cardValue << " points\n" << std::endl;
@@ -263,7 +265,7 @@ void jackBlack(std::vector<Card>& cards) {
 				
 				drawCard = _getch();
 				drawCard = tolower(drawCard);
-				
+								
 				// End the players turn
 				if (drawCard == 'n') {
 					break;
