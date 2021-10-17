@@ -51,12 +51,13 @@ void logIn() {
 							}
 							std::cout << "Enter the password for that account;" << std::endl;
 							std::getline(std::cin, insertPassWord);
-							clearCin();
 							if (insertPassWord == users[logInLoop].passWord) {
 								std::cout << "Login successful! Welcome" << users[logInLoop].userName << "\n" << "We will bring you to JackBlack in just a moment" << std::endl;
 								correctPassWord = 1;
+								Sleep(2000);
 								break; // Should this be included? Need more testing
 							}
+							clearCin();
 						}
 					}
 				}
@@ -214,7 +215,7 @@ void jackBlack(std::vector<Card>& cards) {
 			std::cout << "You bet " << bet << "$" << std::endl;
 			std::cout << "Winner of this round receives " << pot << "$\n" << std::endl;
 
-			//turnCount = 0;
+			//turnCount = 0; // Currently haven't found a way to randomize the row of cards each round
 
 			// The player's turn to draw cards
 			for (turnCount; turnCount < cards.size(); turnCount++) { 
@@ -378,7 +379,11 @@ void jackBlack(std::vector<Card>& cards) {
 void restock(std::vector<Card>& cards) {
 
 	// Gives a seed based on the system clock
-	unsigned seed = (std::chrono::system_clock::now().time_since_epoch().count());
+	unsigned seed{};// = (std::chrono::system_clock::now().time_since_epoch().count());
+
+	srand(time(0));
+
+	seed = rand();
 
 	// Shuffles the cards vector
 	std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
@@ -404,7 +409,7 @@ void rules() {
 	std::cout << "If I match your point value it is a draw, and we play again without any losses." << std::endl;
 	std::cout << "The minimum fee you must bet to play a round is 10$. I will always match your bet, so you cannot bet more money than I have." << std::endl;
 	std::cout << "We play until one of us loses all of our capital, or you decide to close the program.\n" << std::endl;
-	
+	Sleep(5000);
 	std::cout << "Press any button to continue.";
 	gotIt = _getch();
 	system("cls");
