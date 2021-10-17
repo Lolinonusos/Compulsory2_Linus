@@ -1,13 +1,13 @@
 #include "Header.h"
 
 int main() {
-	logIn();
+	logIn(); // Make user and login to play JackBlack
 
 	std::vector<Card> cards{}; // A vector for keeping all the different cards
 	makeCards(cards); // All the cards are created and pushed into the cards vector
-	introToJackBlack();
+	introToJackBlack(); 
 	jackBlack(cards); // Gaming
-	return 0;
+	return 0; // Only gets here when you decide you are done with JackBlack
 }
 
 // Here you log with a username and password
@@ -21,7 +21,7 @@ void logIn() {
 		std::string insertUserName{}; // For logging in
 		std::string insertPassWord{}; // For logging in
 
-		std::cout << users.size() << std::endl << std::endl; // Testing purpose
+		std::cout << "There are " << users.size() << "users currently playing JackBlack on our site." << std::endl << std::endl; // Testing purpose
 	
 		std::cout << "----- Welcome to JackBlack -----\n" << std::endl;
 		std::cout << "Before you can play you must log in or create a new user" << std::endl;
@@ -34,26 +34,33 @@ void logIn() {
 			createUser(users);
 		}
 		else if (yn == '2') { // Logging in
-			clearCin();
-			std::getline(std::cin, insertUserName); // This is where user name is inserted
-	
-			for (int logInLoop = 0; logInLoop < users.size(); logInLoop++) { // This loop is going to check the vector for user names and then ask for the password to that user
-				if (insertUserName == users[logInLoop].userName) {
+			if (users.size() == 0) {
+				std::cout << "Please make an account first :)";
+				Sleep(1000);
+			}
+			else {
+				clearCin();
+				std::getline(std::cin, insertUserName); // This is where user name is inserted
+		
+				for (int logInLoop = 0; logInLoop < users.size(); logInLoop++) { // This loop is going to check the vector for user names and then ask for the password to that user
+					if (insertUserName == users[logInLoop].userName) {
 					
-					for (int i = 0; i < 3; i++) { // For loop that will terminate program after three failed attempts
-						if (i == 3) {
-							std::cout << "The password has bees entered wrong too many times\n" << "We will now terminate the login attempt" << std::endl;
-							exit(0);
-						}
-						std::cout << "Enter the password for that account; << std::endl";
-						std::getline(std::cin, insertPassWord);
-						if (insertPassWord == users[logInLoop].passWord) {
-							std::cout << "Login successful! Welcome" << users[logInLoop].userName << "\n" << "We will bring you to JackBlack in just a moment" << std::endl;
-							correctPassWord = 1;
+						for (int i = 0; i < 3; i++) { // For loop that will terminate program after three failed attempts
+							if (i == 3) {
+								std::cout << "The password has bees entered wrong too many times\n" << "We will now terminate the login attempt" << std::endl;
+								exit(0);
+							}
+							std::cout << "Enter the password for that account;" << std::endl;
+							std::getline(std::cin, insertPassWord);
+							if (insertPassWord == users[logInLoop].passWord) {
+								std::cout << "Login successful! Welcome" << users[logInLoop].userName << "\n" << "We will bring you to JackBlack in just a moment" << std::endl;
+								correctPassWord = 1;
+								break; // Should this be included? Need more testing
+							}
 						}
 					}
-				}
-			}	
+				}	
+			}
 		}
 	}
 }
@@ -202,7 +209,7 @@ void jackBlack(std::vector<Card>& cards) {
 			std::cout << "You bet " << bet << "$" << std::endl;
 			std::cout << "Winner of this round receives " << pot << "$\n" << std::endl;
 
-			//turnCount = 0;
+			turnCount = 0;
 
 			// The player's turn to draw cards
 			for (turnCount; turnCount < cards.size(); turnCount++) { 
@@ -349,6 +356,8 @@ void jackBlack(std::vector<Card>& cards) {
 
 		player.capital = 100;
 		house.capital = 100;
+		
+		makeCards(cards); // All the cards are created and pushed into the cards vector
 
 		std::cout << "Do you want to play another round? y/n\n" << std::endl;
 		std::cin >> playAnotherGame;
